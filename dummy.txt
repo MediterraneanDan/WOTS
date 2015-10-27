@@ -1,1 +1,2 @@
 I am your GIT practice text file
+I now have changes
