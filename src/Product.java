@@ -5,13 +5,11 @@ public class Product {
 	private int productID = 0;
 	private String productName = "";
 	private float sellingPrice = 0;
-	private float stockPrice = 0;
 	
-	Product(int productID, String productName, float sellingPrice, float stockPrice){
+	Product(int productID, String productName, float sellingPrice){
 		this.productID = productID;
 		this.productName = productName;
 		this.sellingPrice = sellingPrice;
-		this.stockPrice = stockPrice;
 	}
 
 	public int getProductID() {
@@ -38,12 +36,5 @@ public class Product {
 		this.sellingPrice = sellingPrice;
 	}
 
-	public float getStockPrice() {
-		return stockPrice;
-	}
-
-	public void setStockPrice(float stockPrice) {
-		this.stockPrice = stockPrice;
-	}
 
 }

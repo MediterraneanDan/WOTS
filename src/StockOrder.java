@@ -5,13 +5,15 @@ import java.util.List;
 public class StockOrder {
 			//Attributes
 			private int stockOrderID = 0; //public for now
-			private float totalOrderValue = 0;//public for now
+			private String orderStatus;//unplaced/placed/delivered
 			
 			
 			
-			StockOrder (int stockOrderID, float totalOrderValue){
+			
+
+			StockOrder (int stockOrderID, String orderStatus){
 				this.stockOrderID = stockOrderID;
-				this.totalOrderValue = totalOrderValue;
+				this.orderStatus = orderStatus;
 			}
 
 
@@ -27,15 +29,14 @@ public class StockOrder {
 				this.stockOrderID = stockOrderID;
 			}
 
-			public float getTotalOrderValue() {
-				return totalOrderValue;
+			public String getOrderStatus() {
+				return orderStatus;
 			}
 
-			public void setTotalOrderValue(float totalOrderValue) {
-				this.totalOrderValue = totalOrderValue;
+
+			public void setOrderStatus(String orderStatus) {
+				this.orderStatus = orderStatus;
 			}
 
-	
-	
 
 }

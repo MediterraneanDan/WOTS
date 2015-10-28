@@ -280,9 +280,9 @@ public class WOTSGUI1 extends JFrame {
 		JPanel bottomLeftPanel = new JPanel();
 		bottomLeftPanel.setLayout(new GridLayout(2,1));
 		JPanel bottomRightPanel = new JPanel();
-		bottomRightPanel.setLayout(new GridLayout(5,1));
+		bottomRightPanel.setLayout(new GridLayout(3,1));
 		
-		JLabel currentOrdersLabel = new JLabel("Current Orders");
+		JLabel currentOrdersLabel = new JLabel("Current Orders:");
 		topPanel.add(currentOrdersLabel);
 		JButton newOrderButton = new JButton("Create new Order");
 		topPanel.add(newOrderButton);
@@ -290,7 +290,7 @@ public class WOTSGUI1 extends JFrame {
 		ArrayList<StockOrder> listOfOrders = newDbConnection.readStockOrderList();
 		DefaultListModel stockOrders = new DefaultListModel();
 		for(int counter=0; counter < listOfOrders.size(); counter++){
-			stockOrders.addElement("Order ID: " + Integer.toString(listOfOrders.get(counter).getStockOrderID()) + " Total order value: " + listOfOrders.get(counter).getTotalOrderValue());
+			stockOrders.addElement("Order ID: " + Integer.toString(listOfOrders.get(counter).getStockOrderID()) + " Order status: " + listOfOrders.get(counter).getOrderStatus());
 		}
 		JList currOrdersList = new JList(stockOrders);
 		topPanel.add(currOrdersList);
@@ -301,24 +301,51 @@ public class WOTSGUI1 extends JFrame {
 				ArrayList<StockOrder> listOfOrders = newDbConnection.readStockOrderList();
 				stockOrders.clear();
 				for(int counter=0; counter < listOfOrders.size(); counter++){
-					stockOrders.addElement("Order ID: " + Integer.toString(listOfOrders.get(counter).getStockOrderID()) + " Total order value: " + listOfOrders.get(counter).getTotalOrderValue());
+					stockOrders.addElement("Order ID: " + Integer.toString(listOfOrders.get(counter).getStockOrderID()) + " Order status: " + listOfOrders.get(counter).getOrderStatus());
 				}
 			}	
 		});
 		
-		JLabel selectOrderLabel = new JLabel("Select order to add products");
+		JLabel selectOrderLabel = new JLabel("Select order from list to add products");
 		topPanel.add(selectOrderLabel);
 		
-		JLabel selectProductLabel = new JLabel("Select Product");
+		JLabel selectProductLabel = new JLabel("Choose Product from list:");
 		bottomLeftPanel.add(selectProductLabel);
 		
 		ArrayList<Product> listOfProducts = newDbConnection.readProductList();
 		DefaultListModel products = new DefaultListModel();
 		for(int counter=0; counter < listOfProducts.size(); counter++){
-			products.addElement("Product ID: " + Integer.toString(listOfProducts.get(counter).getProductID()) + " Product Name: " + listOfProducts.get(counter).getProductName() + " Selling Price: " + listOfProducts.get(counter).getSellingPrice() + " Stock Price: " + listOfProducts.get(counter).getStockPrice());
+			products.addElement("Product ID: " + Integer.toString(listOfProducts.get(counter).getProductID()) + " Product Name: " + listOfProducts.get(counter).getProductName());
 		}
 		JList productList = new JList(products);
-		topPanel.add(productList);
+		bottomLeftPanel.add(productList);
+		
+		JPanel quantityPanel = new JPanel();
+		quantityPanel.setLayout(new GridLayout(1,2));
+		JLabel enterQuantityLabel = new JLabel("Select quantity:");
+		quantityPanel.add(enterQuantityLabel);
+		JTextField quantityField = new JTextField("0");
+		quantityPanel.add(quantityField);
+		bottomRightPanel.add(quantityPanel);
+		
+		JPanel porouswarePanel = new JPanel();
+		porouswarePanel.setLayout(new GridLayout(1,2));
+		ButtonGroup porouswareOptions = new ButtonGroup();
+		JRadioButton yesPorousware = new JRadioButton("Porousware");
+		porouswareOptions.add(yesPorousware);
+		JRadioButton noPorousware = new JRadioButton("No Porousware");
+		porouswareOptions.add(noPorousware);
+		porouswarePanel.add(yesPorousware);
+		porouswarePanel.add(noPorousware);
+		bottomRightPanel.add(porouswarePanel);
+		
+		JButton addProductsButton = new JButton("Add products to order");
+		addProductsButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				newDbConnection.addStockOrderLine((currOrdersList.getSelectedIndex() + 1), (productList.getSelectedIndex() + 1), Integer.parseInt(quantityField.getText()), yesPorousware.isSelected());
+			}	
+		});
+		bottomRightPanel.add(addProductsButton);
 		
 		stockOrderMenu.add(topPanel);
 		bottomPanel.add(bottomLeftPanel);

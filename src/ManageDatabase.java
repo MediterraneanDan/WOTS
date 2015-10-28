@@ -201,12 +201,12 @@ public class ManageDatabase {
 			//code for reading
 			System.out.println("Creating statement...");
 			stmt = conn.createStatement();
-			String sq12 = "SELECT StockOrderID, TotalOrderValue FROM stockorder";
+			String sq12 = "SELECT StockOrderID, OrderStatus FROM stockorder";
 			ResultSet rs = stmt.executeQuery(sq12);
 			while(rs.next()) {
 				int stockOrderID = rs.getInt("StockOrderID");
-				float totalOrderValue = rs.getFloat("TotalOrderValue");
-				StockOrder newStockOrder = new StockOrder(stockOrderID, totalOrderValue);
+				String orderStatus = rs.getString("OrderStatus");
+				StockOrder newStockOrder = new StockOrder(stockOrderID, orderStatus);
 				listOfStockOrders.add(newStockOrder);
 				System.out.println("");
 			}
@@ -240,6 +240,12 @@ public class ManageDatabase {
 	}
 	
 	public void addStockOrderLine(int stockOrderID, int productID, int quantity, boolean porousware){
+		int porouswareChoice;
+		if(porousware == true){
+			porouswareChoice = 1;
+		}else{
+			porouswareChoice = 0;
+		}
 		Connection conn = null;
 		Statement stmt = null;
 		try {
@@ -251,7 +257,7 @@ public class ManageDatabase {
 			//code for inserting a new stock order
 			System.out.println("Inserting records into the table...");
 			stmt = conn.createStatement();
-			String sql = "INSERT INTO stockorderlines (StockOrderID, ProductID, Quantity, Porousware)" + "VALUES ('" +stockOrderID+"', '"+productID+"', '"+quantity+"', '"+porousware+"')";//inserts a 0 total just to auto generate a new stock order id
+			String sql = "INSERT INTO stockorderlines (StockOrderID, ProductID, Quantity, Porousware)" + "VALUES ('" +stockOrderID+"', '"+productID+"', '"+quantity+"', '"+porouswareChoice+"')";//inserts a 0 total just to auto generate a new stock order id
 			stmt.executeUpdate(sql);//create new order by inserting blank total into stockOrder then take the newly created ID by reading from the tablethen insert new orderline with ID read
 			System.out.println("Inserting records into the table");//or have it so you create new order which inserts new id into stockOrder then an add order line button with the stock order ID
 		
@@ -278,6 +284,43 @@ public class ManageDatabase {
 		System.out.println("Goodbye!");
 		
 	}
+	public void updateStockOrderPrice(){
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Connecting to database...");
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+			//code for updating
+			System.out.println("Creating statement...");
+			stmt = conn.createStatement();
+			//String sq13 = "UPDATE stockorder " + "SET OrderStatus = '"+newOrderStatus+ "', BeingWorkedOn = '"+beingWorkedOn+ "' WHERE CustomerOrderID = '"+custOrderID+"'";
+			//stmt.executeUpdate(sq13);
+		
+		
+		//closing connection
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (stmt !=null){
+					stmt.close();
+				}
+			} catch (SQLException se) {
+			}
+			try {
+				if (conn != null){
+					conn.close();
+				}
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		System.out.println("Goodbye!");
+	}
 	
 	public ArrayList<Product> readProductList(){//method which opens and closes connection
 		ArrayList<Product> listOfProducts = new ArrayList<Product>();//arraylist will be filled with orders--commented out for vector test with jlist
@@ -291,14 +334,13 @@ public class ManageDatabase {
 			//code for reading
 			System.out.println("Creating statement...");
 			stmt = conn.createStatement();
-			String sq12 = "SELECT ProductID, ProductName, SellingPrice, StockPrice FROM product";
+			String sq12 = "SELECT ProductID, ProductName, SellingPrice FROM product";
 			ResultSet rs = stmt.executeQuery(sq12);
 			while(rs.next()) {
 				int productID = rs.getInt("ProductID");
 				String productName = rs.getString("ProductName");
 				int sellingPrice = rs.getInt("SellingPrice");
-				int stockPrice = rs.getInt("StockPrice");
-				Product newProduct = new Product(productID, productName, sellingPrice, stockPrice);
+				Product newProduct = new Product(productID, productName, sellingPrice);
 				listOfProducts.add(newProduct);
 				System.out.println("");
 			}
