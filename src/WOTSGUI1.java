@@ -21,14 +21,27 @@ public class WOTSGUI1 extends JFrame {
 	Container custOrderMenu = new Container();
 	Container stockOrderMenu = new Container();
 	
+	//back to main menu button
+	JButton backToMenu = new JButton("Back to Menu");
+
+
+	
 	//aggregate classes
 	ManageDatabase newDbConnection = new ManageDatabase();
 	
 	WOTSGUI1(){
-		mainFrame.setTitle("Warehouse Tracking System");
 		mainFrame.setSize(1500, 1000);
 		mainFrame.setResizable(false);
+		//listener for back to menu button
+		backToMenu.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				custOrderMenu.setVisible(false);
+				stockOrderMenu.setVisible(false);
+				startMenu();
+			}
+		});
 		startMenu();
+
 		mainFrame.setVisible(true);
 	}
 	
@@ -36,6 +49,11 @@ public class WOTSGUI1 extends JFrame {
 	
 	//Methods
 	public void startMenu() {
+		mainFrame.setTitle("Warehouse Tracking System");
+		mainFrame.remove(custOrderMenu);
+		mainFrame.remove(stockOrderMenu);
+		startMenu.removeAll();
+		
 		
 		//panels
 		JPanel titlePanel = new JPanel();
@@ -83,10 +101,10 @@ public class WOTSGUI1 extends JFrame {
 		startMenu.add(titlePanel);
 		startMenu.add(choicePanel);
 		startMenu.setLayout(new GridLayout(2,1));
-		//setTitle("Warehouse Tracking System");
-		//setSize(500, 500);
 		startMenu.setVisible(true);
 		mainFrame.add(startMenu);
+		mainFrame.revalidate();
+
 	}
 	
 	//int listChoice =0;//for the list of orders
@@ -95,19 +113,28 @@ public class WOTSGUI1 extends JFrame {
 
 	
 	public void custOrderMenu(){
+		mainFrame.setTitle("Customer orders");
 		//make the main menu vanish
 		startMenu.setVisible(false);
+		mainFrame.remove(startMenu);
+		custOrderMenu.removeAll();//this line will clear the page if revisited
+		
+		
 		JPanel topPanel = new JPanel();
-		topPanel.setLayout(new GridLayout(2,1));
+		topPanel.setLayout(new GridLayout(1,2));
 		JPanel bottomPanel = new JPanel();
-		bottomPanel.setLayout(new GridLayout(1,2));
-		JPanel bottomLeftPanel = new JPanel();
-		bottomLeftPanel.setLayout(new GridLayout(2,1));
-		JPanel bottomRightPanel = new JPanel();
-		bottomRightPanel.setLayout(new GridLayout(3,1));
+		bottomPanel.setLayout(new GridLayout(2,1));
+		JPanel topLeftPanel = new JPanel();
+		topLeftPanel.setLayout(new GridLayout(2,1));
+		JPanel topRightPanel = new JPanel();
+		topRightPanel.setLayout(new GridLayout(3,1));
+		
+		topLeftPanel.add(backToMenu);
+		JLabel errorField = new JLabel("Any errors will display here:");
+		topLeftPanel.add(errorField);
 		
 		JLabel moreInfoLabel = new JLabel("Click an order for more info!");
-    	topPanel.add(moreInfoLabel);
+    	topRightPanel.add(moreInfoLabel);
 		
 		//list which will contain all current orders
 		//notes could display object of customer orders then if one is clicked search orderlines by the id of the order clicked
@@ -120,7 +147,7 @@ public class WOTSGUI1 extends JFrame {
 		}
 		JList custOrderList = new JList(custOrderIDs);
 		
-		JLabel specificOrder = new JLabel();
+		JTextArea specificOrder = new JTextArea();
 		custOrderList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
 			public void valueChanged(ListSelectionEvent e){
 				//orderSelected = custOrderList.getSelectedIndex() + 1;
@@ -129,36 +156,40 @@ public class WOTSGUI1 extends JFrame {
 				for(int counter=0; counter < listOfOrders.size(); counter++){
 							
 					if(listOfOrders.get(counter).getCustOrderID() == (custOrderList.getSelectedIndex() + 1)){
-						specificOrder.setText("--Order ID: " + listOfOrders.get(counter).getCustOrderID() + " /Total Of order: £" + listOfOrders.get(counter).getTotalOrderValue() + " /Order Status: " + listOfOrders.get(counter).getOrderStatus() + " /Is the order being work on: " + listOfOrders.get(counter).isBeingWorkedOn() + "--");
+						specificOrder.setText("--Order ID: " + listOfOrders.get(counter).getCustOrderID() + " /Total Of order: £" + listOfOrders.get(counter).getTotalOrderValue() + " /Order Status: " + listOfOrders.get(counter).getOrderStatus() + " \n/Is the order being work on: " + listOfOrders.get(counter).isBeingWorkedOn() + " /Which Employee: " + listOfOrders.get(counter).getWhichEmployee() + "--");
 					}
 				}
 				//custOrderMenu.add(new JLabel());
 			}
 		});
-		topPanel.add(custOrderList);
+		topRightPanel.add(custOrderList);
 		specificOrder.setFont(new Font("Serif", Font.PLAIN, 18));
-		bottomLeftPanel.add(specificOrder);
+		topRightPanel.add(specificOrder);
 		
 		//code for changing the state of the selected order
+		JPanel stateChangePanel = new JPanel();
+		stateChangePanel.setLayout(new GridLayout(2,2));
 		JLabel stateChangeLabel = new JLabel("Would you like to change the status of the order selected:");
 		JComboBox statusDropDown = new JComboBox();
 		statusDropDown.addItem("Picked");
 		statusDropDown.addItem("Packed");
 		statusDropDown.addItem("AwaitingDelivery");
 		statusDropDown.addItem("Delivered");
+		JLabel whichEmployeeLabel = new JLabel("Enter employee name:");
+		JTextField whichEmployeeTF = new JTextField("Employee name");
 		JButton submitButton = new JButton("Submit changes");
 		submitButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
 				if(custOrderList.getSelectedIndex() != -1){
 					
 					switch((statusDropDown.getSelectedIndex() + 1)){
-						case 1:	newDbConnection.updateOrderStatus((custOrderList.getSelectedIndex() + 1), "Picked");
+						case 1:	newDbConnection.updateCustOrderStatus((custOrderList.getSelectedIndex() + 1), "Picked", whichEmployeeTF.getText());
 								break;
-						case 2:	newDbConnection.updateOrderStatus((custOrderList.getSelectedIndex() + 1), "Packed");
+						case 2:	newDbConnection.updateCustOrderStatus((custOrderList.getSelectedIndex() + 1), "Packed", whichEmployeeTF.getText());
 								break;
-						case 3:	newDbConnection.updateOrderStatus((custOrderList.getSelectedIndex() + 1), "AwaitingDelivery");
+						case 3:	newDbConnection.updateCustOrderStatus((custOrderList.getSelectedIndex() + 1), "AwaitingDelivery", whichEmployeeTF.getText());
 								break;
-						case 4:	newDbConnection.updateOrderStatus((custOrderList.getSelectedIndex() + 1), "Delivered");
+						case 4:	newDbConnection.updateCustOrderStatus((custOrderList.getSelectedIndex() + 1), "Delivered", whichEmployeeTF.getText());
 								break;
 					}
 					
@@ -170,7 +201,7 @@ public class WOTSGUI1 extends JFrame {
 						
 						if(listOfOrders.get(counter).getCustOrderID() == (custOrderList.getSelectedIndex() + 1)){
 							System.out.println("Hello");
-							specificOrder.setText("--Order ID: " + listOfOrders.get(counter).getCustOrderID() + " /Total Of order: £" + listOfOrders.get(counter).getTotalOrderValue() + " /Order Status: " + listOfOrders.get(counter).getOrderStatus() + " /Is the order being work on: " + listOfOrders.get(counter).isBeingWorkedOn() + "--");
+							specificOrder.setText("--Order ID: " + listOfOrders.get(counter).getCustOrderID() + " /Total Of order: £" + listOfOrders.get(counter).getTotalOrderValue() + " /Order Status: " + listOfOrders.get(counter).getOrderStatus() + " \n/Is the order being work on: " + listOfOrders.get(counter).isBeingWorkedOn() + " /Which Employee: " + listOfOrders.get(counter).getWhichEmployee() + "--");
 						}
 					}
 					
@@ -188,81 +219,24 @@ public class WOTSGUI1 extends JFrame {
 		});
 		
 		stateChangeLabel.setFont(new Font("Serif", Font.PLAIN, 30));
-		bottomRightPanel.add(stateChangeLabel);
+		stateChangePanel.add(stateChangeLabel);
 		statusDropDown.setFont(new Font("Serif", Font.PLAIN, 40));
-		bottomRightPanel.add(statusDropDown);
+		stateChangePanel.add(statusDropDown);
+		whichEmployeeLabel.setFont(new Font("Serif", Font.PLAIN, 30));
+		stateChangePanel.add(whichEmployeeLabel);
+		whichEmployeeTF.setFont(new Font("Serif", Font.PLAIN, 40));
+		stateChangePanel.add(whichEmployeeTF);
+		bottomPanel.add(stateChangePanel);
 		submitButton.setFont(new Font("Serif", Font.PLAIN, 40));
-		bottomRightPanel.add(submitButton);
-		
-		//code for table commented out!!!!
-		/*Vector<String> tableFieldNames = new Vector();
-		tableFieldNames.addElement("Order ID");
-		tableFieldNames.addElement("Order Total");
-		tableFieldNames.addElement("Order Status");
-		tableFieldNames.addElement("Is the order being worked on");
-		
-		Vector<String> specificInfo = new Vector();
-		Vector<Vector> rowData = new Vector<Vector>();
-		
-		JTable specificOrder = new JTable(2, 4);
-		specificOrder.setValueAt("Order ID", 1, 1);
-		specificOrder.setValueAt("Order Total", 1, 2);
-		specificOrder.setValueAt("Status", 1, 3);
-		specificOrder.setValueAt("Is the order being worked on", 1, 4);
-		
-		//JTable specificOrder = new JTable();    also link to important shizzle: http://www.java2s.com/Tutorial/Java/0240__Swing/publicJTableVectorrowDataVectorcolumnNames.htm
-		custOrderList.addListSelectionListener(new ListSelectionListener(){
-			public void valueChanged(ListSelectionEvent e){
-				int listChoice = custOrderList.getSelectedIndex() + 1;
-				for(int counter=0; counter < listOfOrders.size(); counter++){
-					
-					if(listOfOrders.get(counter).getCustOrderID() == listChoice){
-						specificOrder.setValueAt(Integer.toString(listOfOrders.get(counter).getCustOrderID()), 2, 1);
-						specificOrder.setValueAt(Float.toString(listOfOrders.get(counter).getTotalOrderValue()), 2, 2);
-						specificOrder.setValueAt(listOfOrders.get(counter).getOrderStatus(), 2, 3);
-						specificOrder.setValueAt(Boolean.toString(listOfOrders.get(counter).isBeingWorkedOn()), 2, 4);
-						/*specificInfo.addElement(Integer.toString(listOfOrders.get(counter).getCustOrderID()));
-						specificInfo.addElement(Float.toString(listOfOrders.get(counter).getTotalOrderValue()));
-						specificInfo.addElement(listOfOrders.get(counter).getOrderStatus());
-						specificInfo.addElement(Boolean.toString(listOfOrders.get(counter).isBeingWorkedOn()));
-						//Vector<Vector> rowData = new Vector<Vector>();
-						//rowData.add(specificInfo);
-						//JTable specificOrder = new JTable(rowData, tableFieldNames);
-						//bottomLeftPanel.add(specificOrder); 
-						/*SwingUtilities.updateComponentTreeUI(mainFrame);
-						mainFrame.invalidate();
-						mainFrame.validate();
-						mainFrame.repaint();
-					}
-				}
-				//custOrderMenu.add(new JLabel());
-			}
-		});
-		topPanel.add(custOrderList);
-		bottomLeftPanel.add(specificOrder); 
-		//JTable specificOrder = new JTable(specificInfo, tableFieldNames);
-		//bottomLeftPanel.add(specificOrder);    //commented out testing for table alternative
-		
-		
-		
-		//list which will contain all current orders
-		//notes could display object of customer orders then if one is clicked search orderlines by the id of the order clicked
-		//ArrayList<CustomerOrder> listOfOrders = newDbConnection.readCustOrderList();
-		//Vector<String> custOrderIDs = new Vector();
-		//for(int counter=0; counter < listOfOrders.size(); counter++){
-			//custOrderIDs.add("Order ID: " + Integer.toString(listOfOrders.get(counter).getCustOrderID()) + " OrderStatus: " + listOfOrders.get(counter).getOrderStatus());
-		//}
-		//JTable custOrderList = new JTable(custOrderIDs);
-		*/
-		
-		//code for printing specific order
+		bottomPanel.add(submitButton);
 		
 		
 		
 		
+		
+		topPanel.add(topLeftPanel);
+		topPanel.add(topRightPanel);
 		custOrderMenu.add(topPanel);
-		bottomPanel.add(bottomLeftPanel);
-		bottomPanel.add(bottomRightPanel);
 		custOrderMenu.add(bottomPanel);
 		custOrderMenu.setLayout(new GridLayout(2,1));//1 row, 2 columns, first hold buttons, second will hold listing of orders
 		custOrderMenu.setVisible(true);
@@ -271,10 +245,19 @@ public class WOTSGUI1 extends JFrame {
 	}
 	
 	public void stockOrderMenu(){
+		mainFrame.setTitle("Stock orders");
+		//make menu vanish
 		startMenu.setVisible(false);
+		mainFrame.remove(startMenu);
+		stockOrderMenu.removeAll();//this line will clear the page if revisited
+		
 		//panels
 		JPanel topPanel = new JPanel();
-		topPanel.setLayout(new GridLayout(2,2));
+		topPanel.setLayout(new GridLayout(1,2));
+		JPanel topLeftPanel = new JPanel();
+		topLeftPanel.setLayout(new GridLayout(2,1));
+		JPanel topRightPanel = new JPanel();
+		topRightPanel.setLayout(new GridLayout(5,1));
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setLayout(new GridLayout(1,2));
 		JPanel bottomLeftPanel = new JPanel();
@@ -282,10 +265,15 @@ public class WOTSGUI1 extends JFrame {
 		JPanel bottomRightPanel = new JPanel();
 		bottomRightPanel.setLayout(new GridLayout(3,1));
 		
+		topLeftPanel.add(backToMenu);
+		JLabel errorField = new JLabel("Any errors will display here:");
+		topLeftPanel.add(errorField);
+		
 		JLabel currentOrdersLabel = new JLabel("Current Orders:");
-		topPanel.add(currentOrdersLabel);
-		JButton newOrderButton = new JButton("Create new Order");
-		topPanel.add(newOrderButton);
+		topRightPanel.add(currentOrdersLabel);
+		JLabel selectOrderLabel = new JLabel("Select unplaced order from list to add products to");
+		topRightPanel.add(selectOrderLabel);
+		
 		
 		ArrayList<StockOrder> listOfOrders = newDbConnection.readStockOrderList();
 		DefaultListModel stockOrders = new DefaultListModel();
@@ -293,7 +281,9 @@ public class WOTSGUI1 extends JFrame {
 			stockOrders.addElement("Order ID: " + Integer.toString(listOfOrders.get(counter).getStockOrderID()) + " Order status: " + listOfOrders.get(counter).getOrderStatus());
 		}
 		JList currOrdersList = new JList(stockOrders);
-		topPanel.add(currOrdersList);
+		topRightPanel.add(currOrdersList);
+		
+		JButton newOrderButton = new JButton("Create new Order");
 		
 		newOrderButton.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent e){
@@ -306,8 +296,48 @@ public class WOTSGUI1 extends JFrame {
 			}	
 		});
 		
-		JLabel selectOrderLabel = new JLabel("Select order from list to add products");
-		topPanel.add(selectOrderLabel);
+		topRightPanel.add(newOrderButton);
+		
+		JPanel statePanel = new JPanel();
+		statePanel.setLayout(new GridLayout(1,3));
+		JLabel stateChangeLabel = new JLabel("Change the status of the order selected:");
+		JComboBox statusDropDown = new JComboBox();
+		statusDropDown.addItem("Placed");
+		statusDropDown.addItem("Delivered");
+		JButton submitButton = new JButton("Submit changes");
+		submitButton.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				if(currOrdersList.getSelectedIndex() != -1){
+					
+					switch((statusDropDown.getSelectedIndex() + 1)){
+						case 1:	newDbConnection.updateStockOrderStatus((currOrdersList.getSelectedIndex() + 1), "Placed");
+								break;
+						case 2:	newDbConnection.updateStockOrderStatus((currOrdersList.getSelectedIndex() + 1), "Delivered");
+								break;
+					}
+					
+					
+					
+					//listOfOrders = newDbConnection.readCustOrderList(); commented 27/10/15 for locally
+					ArrayList<StockOrder> listOfOrders = newDbConnection.readStockOrderList();
+					
+					stockOrders.clear();//clear listmodel
+					for(int counter=0; counter < listOfOrders.size(); counter++){
+						stockOrders.addElement("Order ID: " + Integer.toString(listOfOrders.get(counter).getStockOrderID()) + " Order status: " + listOfOrders.get(counter).getOrderStatus());
+					}
+					//System.out.println(orderSelected);
+					
+				}else{
+					errorField.setText("No order has been selected!");
+				}
+			}
+			
+		});
+		statePanel.add(stateChangeLabel);
+		statePanel.add(statusDropDown);
+		statePanel.add(submitButton);
+		topRightPanel.add(statePanel);
+		
 		
 		JLabel selectProductLabel = new JLabel("Choose Product from list:");
 		bottomLeftPanel.add(selectProductLabel);
@@ -347,6 +377,10 @@ public class WOTSGUI1 extends JFrame {
 		});
 		bottomRightPanel.add(addProductsButton);
 		
+		
+		
+		topPanel.add(topLeftPanel);
+		topPanel.add(topRightPanel);
 		stockOrderMenu.add(topPanel);
 		bottomPanel.add(bottomLeftPanel);
 		bottomPanel.add(bottomRightPanel);
@@ -358,6 +392,5 @@ public class WOTSGUI1 extends JFrame {
 	}
 	public static void main(String args[]) {
 		WOTSGUI1 guiTest1 = new WOTSGUI1();
-		//guiTest1.startMenu();
 	}
 }

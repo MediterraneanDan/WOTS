@@ -61,14 +61,15 @@ public class ManageDatabase {
 			//code for reading
 			System.out.println("Creating statement...");
 			stmt = conn.createStatement();
-			String sq12 = "SELECT CustomerOrderID, TotalOrderValue, OrderStatus, BeingWorkedOn FROM customerorder";
+			String sq12 = "SELECT CustomerOrderID, TotalOrderValue, OrderStatus, BeingWorkedOn, WhichEmployee FROM customerorder";
 			ResultSet rs = stmt.executeQuery(sq12);
 			while(rs.next()) {
 				int newCustOrderID = rs.getInt("CustomerOrderID");
 				float newCustOrderTotal = rs.getFloat("TotalOrderValue");
 				String newOrderStatus = rs.getString("OrderStatus");
 				boolean newBeingWorkedOn = rs.getBoolean("BeingWorkedOn");
-				CustomerOrder newCustOrder = new CustomerOrder(newCustOrderID, newCustOrderTotal, newOrderStatus, newBeingWorkedOn);
+				String newEmployee = rs.getString("WhichEmployee");
+				CustomerOrder newCustOrder = new CustomerOrder(newCustOrderID, newCustOrderTotal, newOrderStatus, newBeingWorkedOn, newEmployee);
 				listOfOrders.add(newCustOrder);
 				System.out.println("");
 			}
@@ -102,53 +103,54 @@ public class ManageDatabase {
 	}
 	
 	//method for updating order status from database
-		public void updateOrderStatus(int custOrderID, String newOrderStatus){//method which opens and closes connection
-			//code which decides whether the order is being worked on depending on the orders status
-			int beingWorkedOn;//has to be int cus sql is stupid; boolean in sql set to tiny int which can be either 0 or 1
-			if((newOrderStatus.equals("Pending") == true) || (newOrderStatus.equals("Delivered") == true)){//basically if the order status is pending or delivered then its not being worked on
-				beingWorkedOn = 0;
-			}else{
-				beingWorkedOn = 1;
-			}
-				
-			Connection conn = null;
-			Statement stmt = null;
-			try {
-				Class.forName("com.mysql.jdbc.Driver");
-				System.out.println("Connecting to database...");
-				conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
-				//code for updating
-				System.out.println("Creating statement...");
-				stmt = conn.createStatement();
-				String sq13 = "UPDATE customerorder " + "SET OrderStatus = '"+newOrderStatus+ "', BeingWorkedOn = '"+beingWorkedOn+ "' WHERE CustomerOrderID = '"+custOrderID+"'";
-				stmt.executeUpdate(sq13);
-			
-			
-			//closing connection
-			} catch (SQLException sqle) {
-				sqle.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
-			} finally {
-				try {
-					if (stmt !=null){
-						stmt.close();
-					}
-				} catch (SQLException se) {
-				}
-				try {
-					if (conn != null){
-						conn.close();
-					}
-				} catch (SQLException se) {
-					se.printStackTrace();
-				}
-			}
-			System.out.println("Goodbye!");
-			
-			
+	public void updateCustOrderStatus(int custOrderID, String newOrderStatus, String newEmployee){//method which opens and closes connection
+		//code which decides whether the order is being worked on depending on the orders status
+		int beingWorkedOn;//has to be int cus sql is stupid; boolean in sql set to tiny int which can be either 0 or 1
+		if((newOrderStatus.equals("Pending") == true) || (newOrderStatus.equals("Delivered") == true)){//basically if the order status is pending or delivered then its not being worked on
+			beingWorkedOn = 0;
+			newEmployee = "Nobody";
+		}else{
+			beingWorkedOn = 1;
 		}
+				
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Connecting to database...");
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+			//code for updating
+			System.out.println("Creating statement...");
+			stmt = conn.createStatement();
+			String sq13 = "UPDATE customerorder " + "SET OrderStatus = '"+newOrderStatus+ "', BeingWorkedOn = '"+beingWorkedOn+ "', WhichEmployee = '"+newEmployee+ "' WHERE CustomerOrderID = '"+custOrderID+"'";
+			stmt.executeUpdate(sq13);
+			
+			
+		//closing connection
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (stmt !=null){
+					stmt.close();
+				}
+			} catch (SQLException se) {
+			}
+			try {
+				if (conn != null){
+					conn.close();
+				}
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		System.out.println("Goodbye!");
+			
+			
+	}
 	public void createStockOrder(){
 		Connection conn = null;
 		Statement stmt = null;
@@ -322,6 +324,49 @@ public class ManageDatabase {
 		System.out.println("Goodbye!");
 	}
 	
+	//method for updating order status from database
+	public void updateStockOrderStatus(int stockOrderID, String newOrderStatus){//method which opens and closes connection
+		
+					
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Connecting to database...");
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+			//code for updating
+			System.out.println("Creating statement...");
+			stmt = conn.createStatement();
+			String sq13 = "UPDATE stockorder " + "SET OrderStatus = '"+newOrderStatus+"' WHERE StockOrderID = '"+stockOrderID+"'";
+			stmt.executeUpdate(sq13);
+				
+				
+		//closing connection
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (stmt !=null){
+					stmt.close();
+				}
+			} catch (SQLException se) {
+			}
+			try {
+				if (conn != null){
+					conn.close();
+				}
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		System.out.println("Goodbye!");
+				
+				
+	}
+	
 	public ArrayList<Product> readProductList(){//method which opens and closes connection
 		ArrayList<Product> listOfProducts = new ArrayList<Product>();//arraylist will be filled with orders--commented out for vector test with jlist
 		Connection conn = null;
@@ -404,11 +449,11 @@ public class ManageDatabase {
 		String newState;
 		Scanner scanner3 = new Scanner(System.in);
 		newState = scanner3.nextLine();
-		newConnection.updateOrderStatus(choice2, newState);
-		ArrayList<CustomerOrder> newListOfOrders = newConnection.readCustOrderList();
+		//newConnection.updateCustOrderStatus(choice2, newState);
+		/*ArrayList<CustomerOrder> newListOfOrders = newConnection.readCustOrderList();
 		for(int counter=0; counter < newListOfOrders.size(); counter++){
 			System.out.println("Order id:" + newListOfOrders.get(counter).getCustOrderID() + " Total Of order:" + newListOfOrders.get(counter).getTotalOrderValue() + " Order Status:" + newListOfOrders.get(counter).getOrderStatus() + " Is the order being work on:" + newListOfOrders.get(counter).isBeingWorkedOn());
-		}
+		}*/
 	}
 	
 	

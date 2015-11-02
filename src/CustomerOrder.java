@@ -8,6 +8,7 @@ public class CustomerOrder {
 		private float totalOrderValue = 0;//public for now
 		private String orderStatus;//public for now
 		private boolean beingWorkedOn;//for checking whether an order is being worked on
+		private String whichEmployee;//public for now
 		
 		private enum orderState {
 			Pending, Picked, Packed, AwaitingDelivery, Delivered
@@ -39,11 +40,12 @@ public class CustomerOrder {
 		}*/
 		
 		
-		CustomerOrder (int custOrderID, float totalOrderValue, String orderStatus, boolean beingWorkedOn){
+		CustomerOrder (int custOrderID, float totalOrderValue, String orderStatus, boolean beingWorkedOn, String whichEmployee){
 			this.custOrderID = custOrderID;
 			this.totalOrderValue = totalOrderValue;
 			this.orderStatus = orderStatus;
 			this.beingWorkedOn = beingWorkedOn;
+			this.whichEmployee = whichEmployee;
 		}
 		
 		
@@ -88,6 +90,14 @@ public class CustomerOrder {
 
 		public void setBeingWorkedOn(boolean beingWorkedOn) {
 			this.beingWorkedOn = beingWorkedOn;
+		}
+
+		public String getWhichEmployee() {
+			return whichEmployee;
+		}
+
+		public void setWhichEmployee(String whichEmployee) {
+			this.whichEmployee = whichEmployee;
 		}
 		
 		
