@@ -64,17 +64,17 @@ public class TravellingSalesman {
 	}
 	public String getWarehouseRoute(String product1stLocation, String product2ndLocation){
 		String fastestRoute = null;
-		if(product1stLocation == "A" && product2ndLocation == "B"){
+		if(product1stLocation.equals("A") == true && product2ndLocation.equals("B") == true){
 			fastestRoute = "Origin A B Origin";
-		}else if(product1stLocation == "A" && product2ndLocation == "C"){
+		}else if(product1stLocation.equals("A") == true && product2ndLocation.equals("C") == true){
 			fastestRoute = "Origin A C Origin";
-		}else if(product1stLocation == "B" && product2ndLocation == "A"){
+		}else if(product1stLocation.equals("B") == true && product2ndLocation.equals("A") == true){
 			fastestRoute = "Origin B A Origin";
-		}else if(product1stLocation == "B" && product2ndLocation == "C"){
+		}else if(product1stLocation.equals("B") == true && product2ndLocation.equals("C") == true){
 			fastestRoute = "Origin B C Origin";
-		}else if(product1stLocation == "C" && product2ndLocation == "A"){
+		}else if(product1stLocation.equals("C") == true && product2ndLocation.equals("A") == true){
 			fastestRoute = "Origin C A Origin";
-		}else if(product1stLocation == "C" && product2ndLocation == "B"){
+		}else if(product1stLocation.equals("C") == true && product2ndLocation.equals("B") == true){
 			fastestRoute = "Origin C B Origin";
 		}
 		return fastestRoute;
@@ -82,17 +82,17 @@ public class TravellingSalesman {
 	}
 	public String getWarehouseRoute(String product1stLocation, String product2ndLocation, String product3rdLocation){
 		String fastestRoute = null;
-		if(product1stLocation == "A" && product2ndLocation == "B" && product3rdLocation == "C"){
+		if(product1stLocation.equals("A") == true && product2ndLocation.equals("B") == true && product3rdLocation.equals("C") == true){
 			fastestRoute = "Origin A C B Origin";
-		}else if(product1stLocation == "A" && product2ndLocation == "C" && product3rdLocation == "B"){
+		}else if(product1stLocation.equals("A") == true && product2ndLocation.equals("C") == true && product3rdLocation.equals("C") == true){
 			fastestRoute = "Origin A C B Origin";
-		}else if(product1stLocation == "B" && product2ndLocation == "A" && product3rdLocation == "C"){
+		}else if(product1stLocation.equals("B") == true && product2ndLocation.equals("A") == true && product3rdLocation.equals("C") == true){
 			fastestRoute = "Origin A C B Origin";
-		}else if(product1stLocation == "B" && product2ndLocation == "C" && product3rdLocation == "A"){
+		}else if(product1stLocation.equals("B") == true && product2ndLocation.equals("C") == true && product3rdLocation.equals("A") == true){
 			fastestRoute = "Origin A C B Origin";
-		}else if(product1stLocation == "C" && product2ndLocation == "A" && product3rdLocation == "B"){
+		}else if(product1stLocation.equals("C") == true && product2ndLocation.equals("A") == true && product3rdLocation.equals("B") == true){
 			fastestRoute = "Origin A C B Origin";
-		}else if(product1stLocation == "C" && product2ndLocation == "B" && product3rdLocation == "A"){
+		}else if(product1stLocation.equals("C") == true && product2ndLocation.equals("B") == true && product3rdLocation.equals("A") == true){
 			fastestRoute = "Origin A C B Origin";
 		}
 		return fastestRoute;

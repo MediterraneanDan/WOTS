@@ -20,6 +20,7 @@ public class WOTSGUI1 extends JFrame {
 	Container startMenu = new Container();
 	Container custOrderMenu = new Container();
 	Container stockOrderMenu = new Container();
+	Container travellingSalesmanMenu = new Container();
 	
 	//back to main menu button
 	JButton backToMenu = new JButton("Back to Menu");
@@ -28,6 +29,7 @@ public class WOTSGUI1 extends JFrame {
 	
 	//aggregate classes
 	ManageDatabase newDbConnection = new ManageDatabase();
+	TravellingSalesman travellingSalesman = new TravellingSalesman();
 	
 	WOTSGUI1(){
 		mainFrame.setSize(1500, 1000);
@@ -37,6 +39,7 @@ public class WOTSGUI1 extends JFrame {
 			public void actionPerformed(ActionEvent e){
 				custOrderMenu.setVisible(false);
 				stockOrderMenu.setVisible(false);
+				travellingSalesmanMenu.setVisible(false);
 				startMenu();
 			}
 		});
@@ -59,7 +62,7 @@ public class WOTSGUI1 extends JFrame {
 		JPanel titlePanel = new JPanel();
 		titlePanel.setLayout(new GridLayout(2,1));
 		JPanel choicePanel = new JPanel();
-		choicePanel.setLayout(new GridLayout(1,2));
+		choicePanel.setLayout(new GridLayout(1,3));
 		
 		JLabel welcomeMessage = new JLabel("WOTS Main Menu", SwingConstants.CENTER);
 		welcomeMessage.setFont(new Font("Serif", Font.PLAIN, 100));
@@ -97,6 +100,16 @@ public class WOTSGUI1 extends JFrame {
 		stockOrder.setFont(new Font("Serif", Font.PLAIN, 50));
 		stockOrder.setPreferredSize(new Dimension(400, 100));//occurs twice could be in superclass or interface
 		choicePanel.add(stockOrder);
+		
+		JButton travellingSalesman = new JButton("Travelling Salesman");
+		travellingSalesman.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				travellingSalesman();
+			}
+		});
+		travellingSalesman.setFont(new Font("Serif", Font.PLAIN, 50));
+		travellingSalesman.setPreferredSize(new Dimension(400, 100));//occurs twice could be in superclass or interface
+		choicePanel.add(travellingSalesman);
 		
 		startMenu.add(titlePanel);
 		startMenu.add(choicePanel);
@@ -388,6 +401,123 @@ public class WOTSGUI1 extends JFrame {
 		stockOrderMenu.setVisible(true);
 		stockOrderMenu.setLayout(new GridLayout(2,1));
 		mainFrame.add(stockOrderMenu);
+		mainFrame.setVisible(true);
+	}
+	
+	public void travellingSalesman(){
+		mainFrame.setTitle("Travelling Salesman");
+		//make menu vanish
+		startMenu.setVisible(false);
+		mainFrame.remove(startMenu);
+		travellingSalesmanMenu.removeAll();//this line will clear the page if revisited
+		
+		JPanel topPanel = new JPanel();
+		topPanel.setLayout(new GridLayout(1,2));
+		JPanel topLeftPanel = new JPanel();
+		topLeftPanel.setLayout(new GridLayout(2,1));
+		JPanel topRightPanel = new JPanel();
+		topRightPanel.setLayout(new GridLayout(8,1));
+		JPanel bottomPanel = new JPanel();
+		bottomPanel.setLayout(new GridLayout(2, 1));
+		
+		
+		topLeftPanel.add(backToMenu);
+		JLabel errorField = new JLabel("Any errors will display here:");
+		topLeftPanel.add(errorField);
+		
+		JLabel moreInfoLabel = new JLabel("Click an order for more info!");
+		bottomPanel.add(moreInfoLabel);
+		
+		//list which will contain all current orders
+    	ArrayList<CustomerOrder> listOfOrders = newDbConnection.readCustOrderList();
+		DefaultListModel custOrderIDs = new DefaultListModel();
+		for(int counter=0; counter < listOfOrders.size(); counter++){
+			custOrderIDs.addElement("Order ID: " + Integer.toString(listOfOrders.get(counter).getCustOrderID()) + " Is the order being work on: " + listOfOrders.get(counter).isBeingWorkedOn());
+		}
+		JList custOrderList = new JList(custOrderIDs);
+		bottomPanel.add(custOrderList);
+		
+		JLabel orderLinesLabel = new JLabel("Customer Order Lines for selected order");
+		bottomPanel.add(orderLinesLabel);
+		
+		DefaultListModel custOrderLines = new DefaultListModel();
+		JList custOrderLinesList = new JList(custOrderLines);
+		custOrderList.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+			public void valueChanged(ListSelectionEvent e){
+				ArrayList<CustOrderLines> listOfCustOrderLines = newDbConnection.readCustOrderLines();
+				custOrderLines.clear();//clear listmodel
+				for(int counter=0; counter < listOfCustOrderLines.size(); counter++){
+							
+					if(listOfCustOrderLines.get(counter).getCustOrderID() == (custOrderList.getSelectedIndex() + 1)){
+						custOrderLines.addElement("Order Line ID: " + Integer.toString(listOfCustOrderLines.get(counter).getCustOrderLineID()) + " Customer Order ID: " + Integer.toString(listOfCustOrderLines.get(counter).getCustOrderID()) + " Product ID: " + Integer.toString(listOfCustOrderLines.get(counter).getProductID()) + " Quantity: " + Integer.toString(listOfCustOrderLines.get(counter).getQuantity()) + " Warehouse Location: " + listOfCustOrderLines.get(counter).getWarehouseLocation());
+					}
+				}
+			}
+		});
+		bottomPanel.add(custOrderLinesList);
+		
+		JLabel noOfLocationsLabel = new JLabel("Enter number of product locations from order");
+		JLabel enterLocationLabel = new JLabel("Enter product locations from order");
+		JTextField firstProdLocation = new JTextField("Enter 1st location");
+		firstProdLocation.setEditable(false);
+		JTextField secondProdLocation = new JTextField("Enter 2nd location");
+		secondProdLocation.setEditable(false);
+		JTextField thirdProdLocation = new JTextField("Enter 3rd location");
+		thirdProdLocation.setEditable(false);
+		
+		JComboBox noOfProducts = new JComboBox();
+		noOfProducts.addItem("1");
+		noOfProducts.addItem("2");
+		noOfProducts.addItem("3");
+		noOfProducts.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				if(noOfProducts.getSelectedItem().equals("1") == true){
+					firstProdLocation.setEditable(true);
+					secondProdLocation.setEditable(false);
+					thirdProdLocation.setEditable(false);
+				} else if(noOfProducts.getSelectedItem().equals("2") == true){
+					firstProdLocation.setEditable(true);
+					secondProdLocation.setEditable(true);
+					thirdProdLocation.setEditable(false);
+				} else if(noOfProducts.getSelectedItem().equals("3") == true){
+					firstProdLocation.setEditable(true);
+					secondProdLocation.setEditable(true);
+					thirdProdLocation.setEditable(true);
+				}
+			}	
+		});
+		topRightPanel.add(noOfLocationsLabel);
+		topRightPanel.add(noOfProducts);
+		topRightPanel.add(enterLocationLabel);
+		topRightPanel.add(firstProdLocation);
+		topRightPanel.add(secondProdLocation);
+		topRightPanel.add(thirdProdLocation);
+		
+		JButton generateRoute = new JButton("Get fastest route:");
+		JLabel fastestRouteLabel = new JLabel();
+		generateRoute.addActionListener(new ActionListener(){
+			public void actionPerformed(ActionEvent e){
+				if(firstProdLocation.getText().equals("Enter 1st location") == false){
+					fastestRouteLabel.setText(travellingSalesman.getWarehouseRoute(firstProdLocation.getText()));
+				}
+				if((firstProdLocation.getText().equals("Enter 1st location") == false) && (secondProdLocation.getText().equals("Enter 2nd location") == false)){
+					fastestRouteLabel.setText(travellingSalesman.getWarehouseRoute(firstProdLocation.getText(), secondProdLocation.getText()));
+				}
+				if((firstProdLocation.getText().equals("Enter 1st location") == false) && (secondProdLocation.getText().equals("Enter 2nd location") == false) && (thirdProdLocation.getText().equals("Enter 3rd location") == false)){
+					fastestRouteLabel.setText(travellingSalesman.getWarehouseRoute(firstProdLocation.getText(), secondProdLocation.getText(), thirdProdLocation.getText()));
+				}
+			}	
+		});
+		topRightPanel.add(generateRoute);
+		topRightPanel.add(fastestRouteLabel);
+		
+		topPanel.add(topLeftPanel);
+		topPanel.add(topRightPanel);
+		travellingSalesmanMenu.add(topPanel);
+		travellingSalesmanMenu.add(bottomPanel);
+		travellingSalesmanMenu.setVisible(true);
+		travellingSalesmanMenu.setLayout(new GridLayout(2,1));
+		mainFrame.add(travellingSalesmanMenu);
 		mainFrame.setVisible(true);
 	}
 	public static void main(String args[]) {

@@ -102,6 +102,59 @@ public class ManageDatabase {
 		
 	}
 	
+	public ArrayList<CustOrderLines> readCustOrderLines(){//method which opens and closes connection
+		ArrayList<CustOrderLines> listOfOrderLines = new ArrayList<CustOrderLines>();//arraylist will be filled with orders--commented out for vector test with jlist
+		Connection conn = null;
+		Statement stmt = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			System.out.println("Connecting to database...");
+			conn = DriverManager.getConnection(DB_URL, USER, PASS);
+
+			//code for reading
+			System.out.println("Creating statement...");
+			stmt = conn.createStatement();
+			String sq12 = "SELECT CustOrderLineID, CustOrderID, ProductID, Quantity, WarehouseLocation FROM customerorderlines";
+			ResultSet rs = stmt.executeQuery(sq12);
+			while(rs.next()) {
+				int newCustOrderLineID = rs.getInt("CustOrderLineID");
+				int newcustOrderID = rs.getInt("CustOrderID");
+				int newProductID = rs.getInt("ProductID");
+				int newQuantity = rs.getInt("Quantity");
+				String newWarehouseLocation = rs.getString("WarehouseLocation");
+				CustOrderLines newCustOrderLine = new CustOrderLines(newCustOrderLineID, newcustOrderID, newProductID, newQuantity, newWarehouseLocation);
+				listOfOrderLines.add(newCustOrderLine);
+				System.out.println("");
+			}
+			rs.close();
+		
+		
+		//closing connection
+		} catch (SQLException sqle) {
+			sqle.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (stmt !=null){
+					stmt.close();
+				}
+			} catch (SQLException se) {
+			}
+			try {
+				if (conn != null){
+					conn.close();
+				}
+			} catch (SQLException se) {
+				se.printStackTrace();
+			}
+		}
+		System.out.println("Goodbye!");
+		return listOfOrderLines;
+		
+		
+	}
+	
 	//method for updating order status from database
 	public void updateCustOrderStatus(int custOrderID, String newOrderStatus, String newEmployee){//method which opens and closes connection
 		//code which decides whether the order is being worked on depending on the orders status
