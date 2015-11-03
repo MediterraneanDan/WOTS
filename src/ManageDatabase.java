@@ -10,7 +10,7 @@ public class ManageDatabase {
 	
 	//database connection attributes
 	static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
-	static final String DB_URL = "jdbc:mysql://localhost/wotsdatabase";
+	static final String DB_URL = "jdbc:mysql://10.50.15.15:3306/wotsdatabase";
 	
 	static final String USER = "root";
 	static final String PASS = "netbuilder";
