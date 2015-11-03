@@ -169,7 +169,7 @@ public class WOTSGUI1 extends JFrame {
 				for(int counter=0; counter < listOfOrders.size(); counter++){
 							
 					if(listOfOrders.get(counter).getCustOrderID() == (custOrderList.getSelectedIndex() + 1)){
-						specificOrder.setText("--Order ID: " + listOfOrders.get(counter).getCustOrderID() + " /Total Of order: £" + listOfOrders.get(counter).getTotalOrderValue() + " /Order Status: " + listOfOrders.get(counter).getOrderStatus() + " \n/Is the order being work on: " + listOfOrders.get(counter).isBeingWorkedOn() + " /Which Employee: " + listOfOrders.get(counter).getWhichEmployee() + "--");
+						specificOrder.setText("--Order ID: " + listOfOrders.get(counter).getCustOrderID() + " /Total Of order: " + listOfOrders.get(counter).getTotalOrderValue() + " /Order Status: " + listOfOrders.get(counter).getOrderStatus() + " \n/Is the order being work on: " + listOfOrders.get(counter).isBeingWorkedOn() + " /Which Employee: " + listOfOrders.get(counter).getWhichEmployee() + "--");
 					}
 				}
 				//custOrderMenu.add(new JLabel());
@@ -214,7 +214,7 @@ public class WOTSGUI1 extends JFrame {
 						
 						if(listOfOrders.get(counter).getCustOrderID() == (custOrderList.getSelectedIndex() + 1)){
 							System.out.println("Hello");
-							specificOrder.setText("--Order ID: " + listOfOrders.get(counter).getCustOrderID() + " /Total Of order: £" + listOfOrders.get(counter).getTotalOrderValue() + " /Order Status: " + listOfOrders.get(counter).getOrderStatus() + " \n/Is the order being work on: " + listOfOrders.get(counter).isBeingWorkedOn() + " /Which Employee: " + listOfOrders.get(counter).getWhichEmployee() + "--");
+							specificOrder.setText("--Order ID: " + listOfOrders.get(counter).getCustOrderID() + " /Total Of order: " + listOfOrders.get(counter).getTotalOrderValue() + " /Order Status: " + listOfOrders.get(counter).getOrderStatus() + " \n/Is the order being work on: " + listOfOrders.get(counter).isBeingWorkedOn() + " /Which Employee: " + listOfOrders.get(counter).getWhichEmployee() + "--");
 						}
 					}
 					
